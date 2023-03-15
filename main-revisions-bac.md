@@ -66,11 +66,11 @@ INSERT INTO people (name, surname) VALUES ('Zachary', 'MAHBOUB');
 ---
 
 ``` SQL
-SELECT DISTINCT people.name, people.surname FROM track
-JOIN people ON people.id = track.artist
-WHERE track.trackname like '%wind%'
+SELECT DISTINCT people.name, people.surname FROM tracks
+JOIN people ON people.person_id = tracks.artist_id
+WHERE tracks.trackname like '%wind%'
 -- full name of every artist who made a song with 'wind' in name
-ORDER BY track.trackid ASC
+ORDER BY tracks.trackid ASC
 ```
 
 ---
@@ -80,7 +80,7 @@ DELETE FROM track
 WHERE track.trackname = 'MOOOH'
 ```
 
-# compl
+# Complexite
 
 | | O() |
 |-|-|
@@ -96,13 +96,11 @@ Les branches qu'on dessine sonts des **arbres d'appels**
 
 **cas d'arret** : ce qui assure la **terminaison**.
 
-# routage et les processus
-
-## Routage
+# Routage
 
 Le routage consiste à trouver les bons chemins pour acheminer chaque paquet à destination.
 
-192.168.2.1/24 signifie que les 24 premiers bits **identifient le réseau** et les 8 suivants la machine dans le réseau.
+192.168.2.1/24 signifie que les 24 **premiers** bits **identifient le réseau** et les 8 suivants la machine dans le réseau.
 
 S'ils sont tous des `0` --> l’adresse réseau \
 S'ils sont tous des `1` --> l'adresse broadcast
@@ -110,13 +108,13 @@ S'ils sont tous des `1` --> l'adresse broadcast
 - routage **statique** : à la main
 - routage **dynamique** : "automatiquement", on utilise des protocoles
 
-### contraintes
+## Contraintes des protocoles de routage 
 
 - **les routeurs ne connaissent pas la topologie globale du réseau**, ils ne communiquent qu’avec leurs voisins immédiats
 - l’algorithme est **distribué** : _**pas de centre de gestion central**_. Chaque routeur se constitue sa propre table à partir des informations communiquées par ses voisins.
 - l’algorithme est **itératif** : il est exécuté en permanence et ne s’arrête jamais. Lorsqu’une modification est faite sur le réseau, elle se propage de proche en proche à chaque routeur qui adapte sa table en conséquence.
 
-### Protocole RIP
+## Protocole RIP
 
 protocoles à vecteur de distance.
 
@@ -124,7 +122,7 @@ la distance exprimée en **nombre de sauts**
 
 Ce sont donc des couples (adresse, distance), appelés vecteurs de distance, qui sont échangés avec le protocole RIP.
 
-#### Algorithme de Belman-Ford
+### Algorithme de Belman-Ford
 (algorithme de recherche de plus court chemin)
 
 - Chaque routeur reçoit en permanence (toutes les 30 secondes environ) de ses voisins les informations de routage qu'ils possèdent.
@@ -132,6 +130,8 @@ Ce sont donc des couples (adresse, distance), appelés vecteurs de distance, qui
 - Il transmet à son tour ces informations à ses voisins et ainsi de suite.
 
 Le temps nécessaire à la stabilisation des tables est proportionnel au diamètre du graphe modélisant le réseau (c'est-à-dire au nombre maximal d'étapes nécessaires pour relier deux points quelconques du réseau).
+
+#### Les Pannes
 
 - En cas de panne d’un routeur ou de coupure d’une connexion, le réseau est informé : en effet, le routeur cesse alors d’envoyer des mises à jour à ses voisins, ou d’envoyer/recevoir des mises à jour au niveau de la connexion interrompue.
 - Un routeur considère qu’un routeur voisin est en panne s’il n’a rien envoyé pendant six cycles de mise à jour consécutifs (c’est-à-dire pendant 180 secondes). Dans ce cas, il met à jour sa table en indiquant une distance 16 pour le réseau inaccessible (16 = distance infinie).
@@ -147,15 +147,15 @@ Problemes avec un diametre de 15, si le **TTL** est 15 **(time to live)**
 
 #### Bref
 
-Algorithme rapide, mais raremtnent utilisé dans les grandes infrastrucures
+Algorithme rapide, mais rarement utilisé dans les grandes infrastrucures
 
-### OSPF
+## OSPF
 
 Principe: tenir compte de la **bande passante** (bandwidth) des liaisons de communications pour calculer les meilleurs routes
 
 Cout $\frac{10^8}{d}$ , $d$ étant le débit de la liaison
 
-#### truc
+### truc
 
 0. routeur a un ID unique
 
@@ -170,14 +170,14 @@ Cout $\frac{10^8}{d}$ , $d$ étant le débit de la liaison
 3. Chaque routeur d’une zone exécute un algorithme pour calculer les meilleures routes entre lui et n’importe quel autre routeur de la zone.
 Le coût d’une route est la somme des coûts des liaisons entre les routeurs traversés. La meilleure route est celle qui a le coût le plus faible.
 
-#### Zones
+### Zones
 
 Backbone, zone centrale
 
 routeurs internes : in network
 routeurs ABR : sur le bord du sous-réseau, connecté au back-bone
 
-#### Contraintes
+### Contraintes
 
 -  Échanges de messages (HELLO) entre routeurs toutes les 10 secondes
 environ. Si un routeur n’a pas de réponse d’un routeur de sa zone après 4 demandes consécutives, il considère le routeur inaccessible.
@@ -188,13 +188,13 @@ environ. Si un routeur n’a pas de réponse d’un routeur de sa zone après 4 
 	- configuration complexe
 	- capacités mémoire et CPU importantes
 
-#### Algorithme de Dijkstra
+### Algorithme de Dijkstra
 
 Shortest Path First (SPF)
 
 L’algorithme de Dijsktra est un algorithme permettant de trouver le plus court chemin entre deux sommets d’un graphe pondéré, càd un graphe avec des arêtes associées à des valeurs entières.
 
-### Compare
+## Compare
 
 ![table de comp](table-RIPvOSPF.png)
 
